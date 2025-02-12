@@ -9,23 +9,23 @@ lazy_static! {
 }
 
 #[flutter_rust_bridge::frb(dart_async)]
-pub async fn init_nostr_mls(name: String) {
-    let nostr_mls = NostrMls::new(PathBuf::from(name), None);
+pub async fn init_nostr_mls(path: String, identity: Option<String>) {
+    let nostr_mls = NostrMls::new(PathBuf::from(path), identity);
     let mut mls = NOSTR_MLS.lock().unwrap();
     *mls = Some(nostr_mls);
 }
 
 #[flutter_rust_bridge::frb(dart_async)]
-pub async fn create_key_package_for_event(bob_public_key: String) -> String {
+pub async fn create_key_package_for_event(public_key: String) -> String {
     let mls = NOSTR_MLS.lock().unwrap();
     let nostr_mls = mls.as_ref().expect("NostrMls is not initialized");
 
-    let bob_encoded_key_package = nostr_openmls::key_packages::create_key_package_for_event(
-        bob_public_key,
+    let encoded_key_package = nostr_openmls::key_packages::create_key_package_for_event(
+        public_key,
         nostr_mls,
     ).expect("Failed to create key package");
 
-    bob_encoded_key_package
+    encoded_key_package
 }
 
 #[flutter_rust_bridge::frb(dart_async)]
@@ -33,13 +33,32 @@ pub async fn parse_key_package(encoded_key_package: String) -> String {
     let mls = NOSTR_MLS.lock().unwrap();
     let nostr_mls = mls.as_ref().expect("NostrMls is not initialized");
 
-    let bob_key_package = nostr_openmls::key_packages::parse_key_package(
+    let key_package = nostr_openmls::key_packages::parse_key_package(
         encoded_key_package,
         nostr_mls,
     ).expect("Failed to parse key package");
 
-    format!("{:?}", bob_key_package)
+    format!("{:?}", key_package)
 }
+
+#[flutter_rust_bridge::frb(dart_async)]
+pub async fn delete_key_package_from_storage(encoded_key_package: String) -> String {
+    let mls = NOSTR_MLS.lock().unwrap();
+    let nostr_mls = mls.as_ref().expect("NostrMls is not initialized");
+
+    let key_package = nostr_openmls::key_packages::parse_key_package(
+        encoded_key_package,
+        nostr_mls,
+    ).expect("Failed to parse key package");
+
+    nostr_openmls::key_packages::delete_key_package_from_storage(
+        key_package,
+        nostr_mls,
+    ).expect("Failed to parse key package");
+
+    format!("Deleted!")
+}
+
 
 #[flutter_rust_bridge::frb(dart_async)]
 pub async fn create_group(

@@ -9,16 +9,22 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 // These types are ignored because they are not used by any `pub` functions: `NOSTR_MLS`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `deref`, `initialize`
 
-Future<void> initNostrMls({required String name}) =>
-    RustLib.instance.api.crateApiMlsApiInitNostrMls(name: name);
-
-Future<String> createKeyPackageForEvent({required String bobPublicKey}) =>
+Future<void> initNostrMls({required String path, String? identity}) =>
     RustLib.instance.api
-        .crateApiMlsApiCreateKeyPackageForEvent(bobPublicKey: bobPublicKey);
+        .crateApiMlsApiInitNostrMls(path: path, identity: identity);
+
+Future<String> createKeyPackageForEvent({required String publicKey}) =>
+    RustLib.instance.api
+        .crateApiMlsApiCreateKeyPackageForEvent(publicKey: publicKey);
 
 Future<String> parseKeyPackage({required String encodedKeyPackage}) =>
     RustLib.instance.api
         .crateApiMlsApiParseKeyPackage(encodedKeyPackage: encodedKeyPackage);
+
+Future<String> deleteKeyPackageFromStorage(
+        {required String encodedKeyPackage}) =>
+    RustLib.instance.api.crateApiMlsApiDeleteKeyPackageFromStorage(
+        encodedKeyPackage: encodedKeyPackage);
 
 Future<String> createGroup(
         {required String groupName,
