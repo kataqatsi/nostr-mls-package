@@ -59,36 +59,41 @@ pub async fn delete_key_package_from_storage(encoded_key_package: String) -> Str
     format!("Deleted!")
 }
 
-
 #[flutter_rust_bridge::frb(dart_async)]
 pub async fn create_group(
     group_name: String,
     group_description: String,
-    bob_key_package: String,
-    alice_public_key: String,
-    bob_public_key: String,
+    group_members_key_packages: Vec<String>,
+    group_creator_public_key: String,
     group_admin_public_keys: Vec<String>,
     relays: Vec<String>,
 ) -> String {
     let mls = NOSTR_MLS.lock().unwrap();
     let nostr_mls = mls.as_ref().expect("NostrMls is not initialized");
 
-    let bob_key_package_parsed = nostr_openmls::key_packages::parse_key_package(
-        bob_key_package,
-        nostr_mls,
-    ).expect("Failed to parse Bob's key package");
+    let member_key_packages: Vec<nostr_openmls::key_packages::KeyPackage> = group_members_key_packages
+        .iter()
+        .map(|key_package_str| {
+            nostr_openmls::key_packages::parse_key_package(key_package_str.to_string(), nostr_mls)
+                .expect("Failed to parse key package")
+        })
+        .collect();
 
     let group_create_result = nostr_mls.create_group(
         group_name,
         group_description,
-        vec![bob_key_package_parsed],
+        member_key_packages,
         group_admin_public_keys,
-        alice_public_key,
+        group_creator_public_key,
         relays,
-    ).expect("Failed to create group");
+    );
 
-    format!("Group created: {:?}", group_create_result)
+    match group_create_result {
+        Ok(result) => format!("Group created: {:?}", result),
+        Err(err) => format!("Failed to create group: {:?}", err),
+    }
 }
+
 
 #[flutter_rust_bridge::frb(dart_async)]
 pub async fn create_message_for_group(

@@ -69,9 +69,8 @@ fn wire__crate__api__mls_api__create_group_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_group_name = <String>::sse_decode(&mut deserializer);
             let api_group_description = <String>::sse_decode(&mut deserializer);
-            let api_bob_key_package = <String>::sse_decode(&mut deserializer);
-            let api_alice_public_key = <String>::sse_decode(&mut deserializer);
-            let api_bob_public_key = <String>::sse_decode(&mut deserializer);
+            let api_group_members_key_packages = <Vec<String>>::sse_decode(&mut deserializer);
+            let api_group_creator_public_key = <String>::sse_decode(&mut deserializer);
             let api_group_admin_public_keys = <Vec<String>>::sse_decode(&mut deserializer);
             let api_relays = <Vec<String>>::sse_decode(&mut deserializer);
             deserializer.end();
@@ -82,9 +81,8 @@ fn wire__crate__api__mls_api__create_group_impl(
                             crate::api::mls_api::create_group(
                                 api_group_name,
                                 api_group_description,
-                                api_bob_key_package,
-                                api_alice_public_key,
-                                api_bob_public_key,
+                                api_group_members_key_packages,
+                                api_group_creator_public_key,
                                 api_group_admin_public_keys,
                                 api_relays,
                             )

@@ -29,17 +29,15 @@ Future<String> deleteKeyPackageFromStorage(
 Future<String> createGroup(
         {required String groupName,
         required String groupDescription,
-        required String bobKeyPackage,
-        required String alicePublicKey,
-        required String bobPublicKey,
+        required List<String> groupMembersKeyPackages,
+        required String groupCreatorPublicKey,
         required List<String> groupAdminPublicKeys,
         required List<String> relays}) =>
     RustLib.instance.api.crateApiMlsApiCreateGroup(
         groupName: groupName,
         groupDescription: groupDescription,
-        bobKeyPackage: bobKeyPackage,
-        alicePublicKey: alicePublicKey,
-        bobPublicKey: bobPublicKey,
+        groupMembersKeyPackages: groupMembersKeyPackages,
+        groupCreatorPublicKey: groupCreatorPublicKey,
         groupAdminPublicKeys: groupAdminPublicKeys,
         relays: relays);
 

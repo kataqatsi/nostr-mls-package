@@ -80,9 +80,8 @@ abstract class RustLibApi extends BaseApi {
   Future<String> crateApiMlsApiCreateGroup(
       {required String groupName,
       required String groupDescription,
-      required String bobKeyPackage,
-      required String alicePublicKey,
-      required String bobPublicKey,
+      required List<String> groupMembersKeyPackages,
+      required String groupCreatorPublicKey,
       required List<String> groupAdminPublicKeys,
       required List<String> relays});
 
@@ -126,9 +125,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Future<String> crateApiMlsApiCreateGroup(
       {required String groupName,
       required String groupDescription,
-      required String bobKeyPackage,
-      required String alicePublicKey,
-      required String bobPublicKey,
+      required List<String> groupMembersKeyPackages,
+      required String groupCreatorPublicKey,
       required List<String> groupAdminPublicKeys,
       required List<String> relays}) {
     return handler.executeNormal(NormalTask(
@@ -136,9 +134,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(groupName, serializer);
         sse_encode_String(groupDescription, serializer);
-        sse_encode_String(bobKeyPackage, serializer);
-        sse_encode_String(alicePublicKey, serializer);
-        sse_encode_String(bobPublicKey, serializer);
+        sse_encode_list_String(groupMembersKeyPackages, serializer);
+        sse_encode_String(groupCreatorPublicKey, serializer);
         sse_encode_list_String(groupAdminPublicKeys, serializer);
         sse_encode_list_String(relays, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
@@ -152,9 +149,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       argValues: [
         groupName,
         groupDescription,
-        bobKeyPackage,
-        alicePublicKey,
-        bobPublicKey,
+        groupMembersKeyPackages,
+        groupCreatorPublicKey,
         groupAdminPublicKeys,
         relays
       ],
@@ -167,9 +163,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         argNames: [
           "groupName",
           "groupDescription",
-          "bobKeyPackage",
-          "alicePublicKey",
-          "bobPublicKey",
+          "groupMembersKeyPackages",
+          "groupCreatorPublicKey",
           "groupAdminPublicKeys",
           "relays"
         ],
