@@ -51,6 +51,11 @@ Future<(String, BigInt)> exportSecretAsHexSecretKeyAndEpoch(
     RustLib.instance.api
         .crateApiMlsApiExportSecretAsHexSecretKeyAndEpoch(groupId: groupId);
 
+Future<String> processMessageForGroup(
+        {required List<int> groupId, required String serializedMessage}) =>
+    RustLib.instance.api.crateApiMlsApiProcessMessageForGroup(
+        groupId: groupId, serializedMessage: serializedMessage);
+
 Future<String> previewWelcomeEvent(
         {required String serializedWelcomeMessage}) =>
     RustLib.instance.api.crateApiMlsApiPreviewWelcomeEvent(
@@ -60,8 +65,3 @@ Future<String> joinGroupFromWelcome(
         {required String serializedWelcomeMessage}) =>
     RustLib.instance.api.crateApiMlsApiJoinGroupFromWelcome(
         serializedWelcomeMessage: serializedWelcomeMessage);
-
-Future<String> processMessageForGroup(
-        {required List<int> groupId, required String serializedMessage}) =>
-    RustLib.instance.api.crateApiMlsApiProcessMessageForGroup(
-        groupId: groupId, serializedMessage: serializedMessage);

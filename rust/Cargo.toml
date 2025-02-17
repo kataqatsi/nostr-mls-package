@@ -17,3 +17,4 @@ nostr-openmls = { version = "0.1.0", git = "https://github.com/erskingardner/nos
 nostr-sdk = {version = "0.37", features = ["nip44"]}
 lazy_static = "1.4"
 anyhow = "1.0"
+serde_json = "1.0"

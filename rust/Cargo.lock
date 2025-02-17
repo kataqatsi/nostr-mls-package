@@ -1482,6 +1482,7 @@ dependencies = [
  "nostr-openmls",
  "nostr-sdk",
  "pretty_env_logger",
+ "serde_json",
  "tokio",
  "tracing",
  "tracing-subscriber",
