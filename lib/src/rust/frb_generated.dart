@@ -101,13 +101,13 @@ abstract class RustLibApi extends BaseApi {
       {required String path, String? identity});
 
   Future<String> crateApiMlsApiJoinGroupFromWelcome(
-      {required String serializedWelcomeMessage});
+      {required List<int> serializedWelcomeMessage});
 
   Future<String> crateApiMlsApiParseKeyPackage(
       {required String encodedKeyPackage});
 
   Future<String> crateApiMlsApiPreviewWelcomeEvent(
-      {required String serializedWelcomeMessage});
+      {required List<int> serializedWelcomeMessage});
 
   Future<String> crateApiMlsApiProcessMessageForGroup(
       {required List<int> groupId, required String serializedMessage});
@@ -304,11 +304,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<String> crateApiMlsApiJoinGroupFromWelcome(
-      {required String serializedWelcomeMessage}) {
+      {required List<int> serializedWelcomeMessage}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(serializedWelcomeMessage, serializer);
+        sse_encode_list_prim_u_8_loose(serializedWelcomeMessage, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 7, port: port_);
       },
@@ -356,11 +356,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<String> crateApiMlsApiPreviewWelcomeEvent(
-      {required String serializedWelcomeMessage}) {
+      {required List<int> serializedWelcomeMessage}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(serializedWelcomeMessage, serializer);
+        sse_encode_list_prim_u_8_loose(serializedWelcomeMessage, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 9, port: port_);
       },

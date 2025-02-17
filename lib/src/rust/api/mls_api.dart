@@ -57,11 +57,11 @@ Future<String> processMessageForGroup(
         groupId: groupId, serializedMessage: serializedMessage);
 
 Future<String> previewWelcomeEvent(
-        {required String serializedWelcomeMessage}) =>
+        {required List<int> serializedWelcomeMessage}) =>
     RustLib.instance.api.crateApiMlsApiPreviewWelcomeEvent(
         serializedWelcomeMessage: serializedWelcomeMessage);
 
 Future<String> joinGroupFromWelcome(
-        {required String serializedWelcomeMessage}) =>
+        {required List<int> serializedWelcomeMessage}) =>
     RustLib.instance.api.crateApiMlsApiJoinGroupFromWelcome(
         serializedWelcomeMessage: serializedWelcomeMessage);

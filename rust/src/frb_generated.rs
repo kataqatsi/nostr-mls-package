@@ -317,7 +317,7 @@ fn wire__crate__api__mls_api__join_group_from_welcome_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_serialized_welcome_message = <String>::sse_decode(&mut deserializer);
+            let api_serialized_welcome_message = <Vec<u8>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
@@ -394,7 +394,7 @@ fn wire__crate__api__mls_api__preview_welcome_event_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_serialized_welcome_message = <String>::sse_decode(&mut deserializer);
+            let api_serialized_welcome_message = <Vec<u8>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(

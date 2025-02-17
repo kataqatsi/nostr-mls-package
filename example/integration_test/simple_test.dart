@@ -10,9 +10,9 @@ String toHexString(List<int> bytes) {
 }
 
 class MlsGroup {
-  final String groupId;
+  final List<int> groupId;
   final List<String> groupMembers;
-  final String serializedWelcomeMessage;
+  final List<int> serializedWelcomeMessage;
   final NostrGroupData nostrGroupData;
 
   MlsGroup({
@@ -28,16 +28,14 @@ class MlsGroup {
     }
 
     List<dynamic> groupIdVec = json['group_id']['value']['vec'];
-    List<int> groupIdInts = groupIdVec.map((e) => e as int).toList();
-    String groupId = toHexString(groupIdInts);
+    List<int> groupId = groupIdVec.map((e) => e as int).toList();
 
     List<String> members = [];
     if (json['members'] != null) {
       members = List<String>.from(json['members']);
     }
 
-    List<int> welcomeMessageInts = List<int>.from(json['serialized_welcome_message']);
-    String serializedWelcomeMessage = toHexString(welcomeMessageInts);
+    List<int> serializedWelcomeMessage = List<int>.from(json['serialized_welcome_message']);
 
     NostrGroupData nostrGroupData = NostrGroupData.fromJson(json['nostr_group_data']);
 
@@ -99,27 +97,36 @@ void main() {
     final directory = await getApplicationDocumentsDirectory();
     await initNostrMls(path: directory.path);
 
+    String alice_pubkey = '3b88ecd9164822437aa8723ebaf224ebda13768cc82bb05785d6a1c8b36a0337';
+    String alice_privkey = '233a778afd756800801a619904e62e99e93fc4f2e4df0343f63d4c02dabc0a9e';
+    String bob_pubkey = 'aa1c02218a8b920d42844cfbf959f3a65d7842a991a709e1d462b1ff3f511769';
+    String bob_privkey = '8434f08f7a8e49c1b934d52988940ccacfcb938292313ff96d581b941ccddcf4';
+
     String encodedKeyPackage = await createKeyPackageForEvent(
-      publicKey:
-      'b3e43e8cc7e6dff23a33d9213a3e912d895b1c3e4250240e0c99dbefe3068b5f',
+      publicKey:bob_pubkey,
     );
 
     String createGroupResult = await createGroup(
       groupName: 'group name',
       groupDescription: 'group descriptions',
       groupMembersKeyPackages: [encodedKeyPackage],
-      groupCreatorPublicKey:
-      'b3e43e8cc7e6dff23a33d9213a3e912d895b1c3e4250240e0c99dbefe3068b5f',
-      groupAdminPublicKeys: [
-        'b3e43e8cc7e6dff23a33d9213a3e912d895b1c3e4250240e0c99dbefe3068b5f'
-      ],
+      groupCreatorPublicKey:alice_pubkey,
+      groupAdminPublicKeys: [alice_pubkey],
       relays: ['wss://example.com'],
     );
 
     MlsGroup mlsGroup = MlsGroup.fromJson(jsonDecode(createGroupResult));
-    print("Group ID: ${mlsGroup.groupId}");
-    print("Group Members: ${mlsGroup.groupMembers}");
-    print("Serialized Welcome Message: ${mlsGroup.serializedWelcomeMessage}");
-    print("Nostr Group Data:${mlsGroup.nostrGroupData.nostrGroupId}, ${mlsGroup.nostrGroupData.name}, ${mlsGroup.nostrGroupData.description}, ${mlsGroup.nostrGroupData.adminPubkeys}, ${mlsGroup.nostrGroupData.relays}");
+    // print("Group ID: ${mlsGroup.groupId}");
+    // print("Group Members: ${mlsGroup.groupMembers}");
+    // print("Serialized Welcome Message: ${mlsGroup.serializedWelcomeMessage}");
+    // print("Nostr Group Data:${mlsGroup.nostrGroupData.nostrGroupId}, ${mlsGroup.nostrGroupData.name}, ${mlsGroup.nostrGroupData.description}, ${mlsGroup.nostrGroupData.adminPubkeys}, ${mlsGroup.nostrGroupData.relays}");
+
+    String preview = await previewWelcomeEvent(serializedWelcomeMessage: mlsGroup.serializedWelcomeMessage);
+    // print(preview);
+
+    String joinGroupResult = await joinGroupFromWelcome(serializedWelcomeMessage: mlsGroup.serializedWelcomeMessage);
+    MlsGroup joinmlsGroup = MlsGroup.fromJson(jsonDecode(joinGroupResult));
+    print("Group Members: ${joinmlsGroup.groupMembers}");
+    print("Nostr Group Data:${joinmlsGroup.nostrGroupData.nostrGroupId}, ${joinmlsGroup.nostrGroupData.name}, ${joinmlsGroup.nostrGroupData.description}, ${joinmlsGroup.nostrGroupData.adminPubkeys}, ${joinmlsGroup.nostrGroupData.relays}");
   });
 }
