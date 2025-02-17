@@ -165,14 +165,14 @@ pub async fn export_secret_as_hex_secret_key_and_epoch(
 #[flutter_rust_bridge::frb(dart_async)]
 pub async fn process_message_for_group(
     group_id: Vec<u8>,
-    serialized_message: String
-) -> Result<String> {
+    serialized_message: Vec<u8>
+) -> Result<Vec<u8>> {
     let mls = NOSTR_MLS.lock().unwrap();
     let nostr_mls = mls.as_ref().expect("NostrMls is not initialized");
 
-    let processed_message = nostr_mls.process_message_for_group(group_id, serialized_message.into())?;
+    let processed_message = nostr_mls.process_message_for_group(group_id, serialized_message)?;
 
-    Ok(format!("{:?}", processed_message))
+    Ok(processed_message)
 }
 
 #[flutter_rust_bridge::frb(dart_async)]

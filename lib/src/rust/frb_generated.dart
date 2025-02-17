@@ -109,8 +109,8 @@ abstract class RustLibApi extends BaseApi {
   Future<String> crateApiMlsApiPreviewWelcomeEvent(
       {required List<int> serializedWelcomeMessage});
 
-  Future<String> crateApiMlsApiProcessMessageForGroup(
-      {required List<int> groupId, required String serializedMessage});
+  Future<Uint8List> crateApiMlsApiProcessMessageForGroup(
+      {required List<int> groupId, required List<int> serializedMessage});
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -381,18 +381,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<String> crateApiMlsApiProcessMessageForGroup(
-      {required List<int> groupId, required String serializedMessage}) {
+  Future<Uint8List> crateApiMlsApiProcessMessageForGroup(
+      {required List<int> groupId, required List<int> serializedMessage}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(groupId, serializer);
-        sse_encode_String(serializedMessage, serializer);
+        sse_encode_list_prim_u_8_loose(serializedMessage, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 10, port: port_);
       },
       codec: SseCodec(
-        decodeSuccessData: sse_decode_String,
+        decodeSuccessData: sse_decode_list_prim_u_8_strict,
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiMlsApiProcessMessageForGroupConstMeta,

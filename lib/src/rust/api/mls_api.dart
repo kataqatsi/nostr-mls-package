@@ -51,8 +51,8 @@ Future<(String, BigInt)> exportSecretAsHexSecretKeyAndEpoch(
     RustLib.instance.api
         .crateApiMlsApiExportSecretAsHexSecretKeyAndEpoch(groupId: groupId);
 
-Future<String> processMessageForGroup(
-        {required List<int> groupId, required String serializedMessage}) =>
+Future<Uint8List> processMessageForGroup(
+        {required List<int> groupId, required List<int> serializedMessage}) =>
     RustLib.instance.api.crateApiMlsApiProcessMessageForGroup(
         groupId: groupId, serializedMessage: serializedMessage);
 

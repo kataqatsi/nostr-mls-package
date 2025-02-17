@@ -126,7 +126,11 @@ void main() {
 
     String joinGroupResult = await joinGroupFromWelcome(serializedWelcomeMessage: mlsGroup.serializedWelcomeMessage);
     MlsGroup joinmlsGroup = MlsGroup.fromJson(jsonDecode(joinGroupResult));
-    print("Group Members: ${joinmlsGroup.groupMembers}");
-    print("Nostr Group Data:${joinmlsGroup.nostrGroupData.nostrGroupId}, ${joinmlsGroup.nostrGroupData.name}, ${joinmlsGroup.nostrGroupData.description}, ${joinmlsGroup.nostrGroupData.adminPubkeys}, ${joinmlsGroup.nostrGroupData.relays}");
+    // print("Group Members: ${joinmlsGroup.groupMembers}");
+    // print("Nostr Group Data:${joinmlsGroup.nostrGroupData.nostrGroupId}, ${joinmlsGroup.nostrGroupData.name}, ${joinmlsGroup.nostrGroupData.description}, ${joinmlsGroup.nostrGroupData.adminPubkeys}, ${joinmlsGroup.nostrGroupData.relays}");
+
+    List<int> serializedMessage = await createMessageForGroup(groupId: mlsGroup.groupId, messageEvent: 'hello');
+    List<int> message = await processMessageForGroup(groupId: mlsGroup.groupId, serializedMessage: serializedMessage);
+    print(utf8.decode(message));
   });
 }

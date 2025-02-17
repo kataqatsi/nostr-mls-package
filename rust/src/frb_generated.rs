@@ -434,7 +434,7 @@ fn wire__crate__api__mls_api__process_message_for_group_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_group_id = <Vec<u8>>::sse_decode(&mut deserializer);
-            let api_serialized_message = <String>::sse_decode(&mut deserializer);
+            let api_serialized_message = <Vec<u8>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| async move {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
