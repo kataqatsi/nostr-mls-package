@@ -13,6 +13,11 @@ Future<void> initNostrMls({required String path, String? identity}) =>
     RustLib.instance.api
         .crateApiMlsApiInitNostrMls(path: path, identity: identity);
 
+String getCiphersuite() => RustLib.instance.api.crateApiMlsApiGetCiphersuite();
+
+List<String> getExtensions() =>
+    RustLib.instance.api.crateApiMlsApiGetExtensions();
+
 Future<String> createKeyPackageForEvent({required String publicKey}) =>
     RustLib.instance.api
         .crateApiMlsApiCreateKeyPackageForEvent(publicKey: publicKey);

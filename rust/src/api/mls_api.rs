@@ -16,6 +16,25 @@ pub async fn init_nostr_mls(path: String, identity: Option<String>) {
     *mls = Some(nostr_mls);
 }
 
+#[flutter_rust_bridge::frb(sync)]
+pub fn get_ciphersuite() -> String {
+    let mls = NOSTR_MLS.lock().unwrap();
+    let nostr_mls = mls.as_ref().expect("NostrMls is not initialized");
+
+    format!("{:?}", nostr_mls.ciphersuite)
+}
+
+#[flutter_rust_bridge::frb(sync)]
+pub fn get_extensions() -> Vec<String> {
+    let mls = NOSTR_MLS.lock().unwrap();
+    let nostr_mls = mls.as_ref().expect("NostrMls is not initialized");
+
+    nostr_mls.extensions
+        .iter()
+        .map(|ext| format!("{:?}", ext))
+        .collect()
+}
+
 #[flutter_rust_bridge::frb(dart_async)]
 pub async fn create_key_package_for_event(public_key: String) -> String {
     let mls = NOSTR_MLS.lock().unwrap();

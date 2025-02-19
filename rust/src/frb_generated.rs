@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.7.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1048412435;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1537393424;
 
 // Section: executor
 
@@ -253,6 +253,64 @@ fn wire__crate__api__mls_api__export_secret_as_hex_secret_key_and_epoch_impl(
                     .await,
                 )
             }
+        },
+    )
+}
+fn wire__crate__api__mls_api__get_ciphersuite_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_ciphersuite",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let output_ok = Result::<_, ()>::Ok(crate::api::mls_api::get_ciphersuite())?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__api__mls_api__get_extensions_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_extensions",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let output_ok = Result::<_, ()>::Ok(crate::api::mls_api::get_extensions())?;
+                Ok(output_ok)
+            })())
         },
     )
 }
@@ -582,18 +640,18 @@ fn pde_ffi_dispatcher_primary_impl(
             rust_vec_len,
             data_len,
         ),
-        6 => wire__crate__api__mls_api__init_nostr_mls_impl(port, ptr, rust_vec_len, data_len),
-        7 => wire__crate__api__mls_api__join_group_from_welcome_impl(
+        8 => wire__crate__api__mls_api__init_nostr_mls_impl(port, ptr, rust_vec_len, data_len),
+        9 => wire__crate__api__mls_api__join_group_from_welcome_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        8 => wire__crate__api__mls_api__parse_key_package_impl(port, ptr, rust_vec_len, data_len),
-        9 => {
+        10 => wire__crate__api__mls_api__parse_key_package_impl(port, ptr, rust_vec_len, data_len),
+        11 => {
             wire__crate__api__mls_api__preview_welcome_event_impl(port, ptr, rust_vec_len, data_len)
         }
-        10 => wire__crate__api__mls_api__process_message_for_group_impl(
+        12 => wire__crate__api__mls_api__process_message_for_group_impl(
             port,
             ptr,
             rust_vec_len,
@@ -611,6 +669,8 @@ fn pde_ffi_dispatcher_sync_impl(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
+        6 => wire__crate__api__mls_api__get_ciphersuite_impl(ptr, rust_vec_len, data_len),
+        7 => wire__crate__api__mls_api__get_extensions_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
