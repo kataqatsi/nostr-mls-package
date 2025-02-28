@@ -97,14 +97,6 @@ void main() {
     final directory = await getApplicationDocumentsDirectory();
     await initNostrMls(path: directory.path);
 
-    var ci = getCiphersuite();
-    var ex = getExtensions();
-
-    print(ci);
-    print(ex);
-
-    return;
-
     String alice_pubkey = '3b88ecd9164822437aa8723ebaf224ebda13768cc82bb05785d6a1c8b36a0337';
     String alice_privkey = '233a778afd756800801a619904e62e99e93fc4f2e4df0343f63d4c02dabc0a9e';
     String bob_pubkey = 'aa1c02218a8b920d42844cfbf959f3a65d7842a991a709e1d462b1ff3f511769';
@@ -113,9 +105,6 @@ void main() {
     String encodedKeyPackage = await createKeyPackageForEvent(
       publicKey:bob_pubkey,
     );
-
-    print(encodedKeyPackage);
-    return;
 
     String createGroupResult = await createGroup(
       groupName: 'group name',
@@ -133,7 +122,9 @@ void main() {
     // print("Nostr Group Data:${mlsGroup.nostrGroupData.nostrGroupId}, ${mlsGroup.nostrGroupData.name}, ${mlsGroup.nostrGroupData.description}, ${mlsGroup.nostrGroupData.adminPubkeys}, ${mlsGroup.nostrGroupData.relays}");
 
     String preview = await previewWelcomeEvent(serializedWelcomeMessage: mlsGroup.serializedWelcomeMessage);
-    // print(preview);
+    print(preview);
+
+    return;
 
     String joinGroupResult = await joinGroupFromWelcome(serializedWelcomeMessage: mlsGroup.serializedWelcomeMessage);
     MlsGroup joinmlsGroup = MlsGroup.fromJson(jsonDecode(joinGroupResult));

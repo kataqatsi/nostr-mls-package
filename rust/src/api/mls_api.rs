@@ -197,13 +197,45 @@ pub async fn process_message_for_group(
 #[flutter_rust_bridge::frb(dart_async)]
 pub async fn preview_welcome_event(
     serialized_welcome_message: Vec<u8>
-) -> Result<String> {
+) -> anyhow::Result<String> {
     let mls = NOSTR_MLS.lock().unwrap();
     let nostr_mls = mls.as_ref().expect("NostrMls is not initialized");
 
-    let welcome_preview = nostr_mls.preview_welcome_event(serialized_welcome_message.into())?;
+    let welcome_preview = nostr_mls.preview_welcome_event(serialized_welcome_message.clone().into());
 
-    Ok(format!("{:?}", welcome_preview))
+    let output_str = match welcome_preview {
+        Ok(result) => {
+            let result_debug = format!("{:?}", result);
+
+            let nostr_data = result.nostr_group_data;
+            let nostr_group_id = nostr_data.nostr_group_id;
+            let name = nostr_data.name;
+            let description = nostr_data.description;
+            let admin_pubkeys = nostr_data.admin_pubkeys;
+            let relays = nostr_data.relays;
+
+            let output = json!({
+                "nostr_group_data": {
+                    "nostr_group_id": nostr_group_id,
+                    "name": name,
+                    "description": description,
+                    "admin_pubkeys": admin_pubkeys,
+                    "relays": relays,
+                }
+            });
+
+            serde_json::to_string_pretty(&output).unwrap_or_else(|_| result_debug)
+        },
+        Err(err) => {
+            let error_message = format!("{}", err);
+            let output = json!({
+                "error": error_message,
+            });
+            serde_json::to_string_pretty(&output).unwrap_or_else(|_| error_message)
+        }
+    };
+
+    Ok(output_str)
 }
 
 #[flutter_rust_bridge::frb(dart_async)]
