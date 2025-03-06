@@ -11,8 +11,13 @@ lazy_static! {
 
 #[flutter_rust_bridge::frb(dart_async)]
 pub async fn init_nostr_mls(path: String, identity: Option<String>) {
+    let mut mls = NOSTR_MLS.lock().expect("Failed to acquire NOSTR_MLS lock");
+
+    if let Some(old_mls) = mls.take() {
+        drop(old_mls);
+    }
+
     let nostr_mls = NostrMls::new(PathBuf::from(path), identity);
-    let mut mls = NOSTR_MLS.lock().unwrap();
     *mls = Some(nostr_mls);
 }
 
