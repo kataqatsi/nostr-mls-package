@@ -13,7 +13,7 @@ tracing = "0.1"
 tracing-subscriber = "0.3.0"
 hex = "0.4"
 tokio = { version = "1", features = ["full"] }
-nostr-openmls = { git = "https://github.com/water783/nostr-openmls", rev = "c8a617f35839ffc0b6bcfd091fa3955e5e653745"}
+nostr-openmls = { git = "https://github.com/water783/nostr-openmls", rev = "22aae5f31da720103158c6cc46e77f129be8c8fb"}
 nostr-sdk = {version = "0.37", features = ["nip44"]}
 lazy_static = "1.4"
 anyhow = "1.0"

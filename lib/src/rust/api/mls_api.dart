@@ -31,6 +31,10 @@ Future<String> deleteKeyPackageFromStorage(
     RustLib.instance.api.crateApiMlsApiDeleteKeyPackageFromStorage(
         encodedKeyPackage: encodedKeyPackage);
 
+Future<String> loadKeyPackageFromStorage({required String encodedKeyPackage}) =>
+    RustLib.instance.api.crateApiMlsApiLoadKeyPackageFromStorage(
+        encodedKeyPackage: encodedKeyPackage);
+
 Future<String> createGroup(
         {required String groupName,
         required String groupDescription,

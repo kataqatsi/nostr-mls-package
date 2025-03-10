@@ -85,6 +85,31 @@ pub async fn delete_key_package_from_storage(encoded_key_package: String) -> Str
 }
 
 #[flutter_rust_bridge::frb(dart_async)]
+pub async fn load_key_package_from_storage(encoded_key_package: String) -> String {
+    // Lock the global NOSTR_MLS instance.
+    let mls = NOSTR_MLS.lock().unwrap();
+    let nostr_mls = mls.as_ref().expect("NostrMls is not initialized");
+
+    // Parse the encoded key package string into a key package object.
+    let key_package = nostr_openmls::key_packages::parse_key_package(
+        encoded_key_package,
+        nostr_mls,
+    )
+    .expect("Failed to parse key package");
+
+    // Load the key package from storage.
+    let loaded_key_package = nostr_openmls::key_packages::load_key_package_from_storage(
+        key_package,
+        nostr_mls,
+    )
+    .expect("Failed to load key package from storage");
+
+    // Serialize the loaded key package to a JSON string.
+    serde_json::to_string(&loaded_key_package)
+        .expect("Failed to serialize loaded key package")
+}
+
+#[flutter_rust_bridge::frb(dart_async)]
 pub async fn create_group(
     group_name: String,
     group_description: String,
