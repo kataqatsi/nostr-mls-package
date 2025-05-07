@@ -66,7 +66,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.7.0';
 
   @override
-  int get rustContentHash => -1048660117;
+  int get rustContentHash => -286345179;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -80,44 +80,35 @@ abstract class RustLibApi extends BaseApi {
   Future<String> crateApiMlsApiCreateGroup(
       {required String groupName,
       required String groupDescription,
-      required List<String> groupMembersKeyPackages,
+      required List<String> groupMembersKeyPackageEvents,
+      required List<String> groupMembersPubkeys,
       required String groupCreatorPublicKey,
       required List<String> groupAdminPublicKeys,
       required List<String> relays});
 
   Future<String> crateApiMlsApiCreateKeyPackageForEvent(
-      {required String publicKey});
+      {required String publicKey, List<String>? relay});
 
   Future<Uint8List> crateApiMlsApiCreateMessageForGroup(
       {required List<int> groupId, required String messageEvent});
 
-  Future<String> crateApiMlsApiDeleteKeyPackageFromStorage(
-      {required String encodedKeyPackage});
-
-  Future<(String, BigInt)> crateApiMlsApiExportSecretAsHexSecretKeyAndEpoch(
+  Future<(String, BigInt)> crateApiMlsApiExportSecret(
       {required List<int> groupId});
 
-  String crateApiMlsApiGetCiphersuite();
+  Future<String> crateApiMlsApiGetCiphersuite();
 
-  List<String> crateApiMlsApiGetExtensions();
+  Future<List<String>> crateApiMlsApiGetExtensions();
 
   Future<void> crateApiMlsApiInitNostrMls(
       {required String path, String? identity});
 
   Future<String> crateApiMlsApiJoinGroupFromWelcome(
-      {required List<int> serializedWelcomeMessage});
+      {required List<int> wrapperEventId, required String messageEvent});
 
-  Future<String> crateApiMlsApiLoadKeyPackageFromStorage(
-      {required String encodedKeyPackage});
-
-  Future<String> crateApiMlsApiParseKeyPackage(
-      {required String encodedKeyPackage});
-
-  Future<String> crateApiMlsApiPreviewWelcomeEvent(
-      {required List<int> serializedWelcomeMessage});
+  Future<String> crateApiMlsApiParseKeyPackage({required String event});
 
   Future<Uint8List> crateApiMlsApiProcessMessageForGroup(
-      {required List<int> groupId, required List<int> serializedMessage});
+      {required String messageEvent});
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -132,7 +123,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Future<String> crateApiMlsApiCreateGroup(
       {required String groupName,
       required String groupDescription,
-      required List<String> groupMembersKeyPackages,
+      required List<String> groupMembersKeyPackageEvents,
+      required List<String> groupMembersPubkeys,
       required String groupCreatorPublicKey,
       required List<String> groupAdminPublicKeys,
       required List<String> relays}) {
@@ -141,7 +133,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(groupName, serializer);
         sse_encode_String(groupDescription, serializer);
-        sse_encode_list_String(groupMembersKeyPackages, serializer);
+        sse_encode_list_String(groupMembersKeyPackageEvents, serializer);
+        sse_encode_list_String(groupMembersPubkeys, serializer);
         sse_encode_String(groupCreatorPublicKey, serializer);
         sse_encode_list_String(groupAdminPublicKeys, serializer);
         sse_encode_list_String(relays, serializer);
@@ -156,7 +149,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       argValues: [
         groupName,
         groupDescription,
-        groupMembersKeyPackages,
+        groupMembersKeyPackageEvents,
+        groupMembersPubkeys,
         groupCreatorPublicKey,
         groupAdminPublicKeys,
         relays
@@ -170,7 +164,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         argNames: [
           "groupName",
           "groupDescription",
-          "groupMembersKeyPackages",
+          "groupMembersKeyPackageEvents",
+          "groupMembersPubkeys",
           "groupCreatorPublicKey",
           "groupAdminPublicKeys",
           "relays"
@@ -179,11 +174,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<String> crateApiMlsApiCreateKeyPackageForEvent(
-      {required String publicKey}) {
+      {required String publicKey, List<String>? relay}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(publicKey, serializer);
+        sse_encode_opt_list_String(relay, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 2, port: port_);
       },
@@ -192,7 +188,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: null,
       ),
       constMeta: kCrateApiMlsApiCreateKeyPackageForEventConstMeta,
-      argValues: [publicKey],
+      argValues: [publicKey, relay],
       apiImpl: this,
     ));
   }
@@ -200,7 +196,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiMlsApiCreateKeyPackageForEventConstMeta =>
       const TaskConstMeta(
         debugName: "create_key_package_for_event",
-        argNames: ["publicKey"],
+        argNames: ["publicKey", "relay"],
       );
 
   @override
@@ -231,64 +227,37 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<String> crateApiMlsApiDeleteKeyPackageFromStorage(
-      {required String encodedKeyPackage}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(encodedKeyPackage, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 4, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_String,
-        decodeErrorData: null,
-      ),
-      constMeta: kCrateApiMlsApiDeleteKeyPackageFromStorageConstMeta,
-      argValues: [encodedKeyPackage],
-      apiImpl: this,
-    ));
-  }
-
-  TaskConstMeta get kCrateApiMlsApiDeleteKeyPackageFromStorageConstMeta =>
-      const TaskConstMeta(
-        debugName: "delete_key_package_from_storage",
-        argNames: ["encodedKeyPackage"],
-      );
-
-  @override
-  Future<(String, BigInt)> crateApiMlsApiExportSecretAsHexSecretKeyAndEpoch(
+  Future<(String, BigInt)> crateApiMlsApiExportSecret(
       {required List<int> groupId}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(groupId, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 5, port: port_);
+            funcId: 4, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_record_string_u_64,
         decodeErrorData: sse_decode_AnyhowException,
       ),
-      constMeta: kCrateApiMlsApiExportSecretAsHexSecretKeyAndEpochConstMeta,
+      constMeta: kCrateApiMlsApiExportSecretConstMeta,
       argValues: [groupId],
       apiImpl: this,
     ));
   }
 
-  TaskConstMeta
-      get kCrateApiMlsApiExportSecretAsHexSecretKeyAndEpochConstMeta =>
-          const TaskConstMeta(
-            debugName: "export_secret_as_hex_secret_key_and_epoch",
-            argNames: ["groupId"],
-          );
+  TaskConstMeta get kCrateApiMlsApiExportSecretConstMeta => const TaskConstMeta(
+        debugName: "export_secret",
+        argNames: ["groupId"],
+      );
 
   @override
-  String crateApiMlsApiGetCiphersuite() {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+  Future<String> crateApiMlsApiGetCiphersuite() {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 5, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_String,
@@ -307,11 +276,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  List<String> crateApiMlsApiGetExtensions() {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+  Future<List<String>> crateApiMlsApiGetExtensions() {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 6, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_String,
@@ -338,7 +308,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_opt_String(identity, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 8, port: port_);
+            funcId: 7, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -357,20 +327,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<String> crateApiMlsApiJoinGroupFromWelcome(
-      {required List<int> serializedWelcomeMessage}) {
+      {required List<int> wrapperEventId, required String messageEvent}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(serializedWelcomeMessage, serializer);
+        sse_encode_list_prim_u_8_loose(wrapperEventId, serializer);
+        sse_encode_String(messageEvent, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 9, port: port_);
+            funcId: 8, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_String,
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiMlsApiJoinGroupFromWelcomeConstMeta,
-      argValues: [serializedWelcomeMessage],
+      argValues: [wrapperEventId, messageEvent],
       apiImpl: this,
     ));
   }
@@ -378,51 +349,24 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiMlsApiJoinGroupFromWelcomeConstMeta =>
       const TaskConstMeta(
         debugName: "join_group_from_welcome",
-        argNames: ["serializedWelcomeMessage"],
+        argNames: ["wrapperEventId", "messageEvent"],
       );
 
   @override
-  Future<String> crateApiMlsApiLoadKeyPackageFromStorage(
-      {required String encodedKeyPackage}) {
+  Future<String> crateApiMlsApiParseKeyPackage({required String event}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(encodedKeyPackage, serializer);
+        sse_encode_String(event, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 10, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_String,
-        decodeErrorData: null,
-      ),
-      constMeta: kCrateApiMlsApiLoadKeyPackageFromStorageConstMeta,
-      argValues: [encodedKeyPackage],
-      apiImpl: this,
-    ));
-  }
-
-  TaskConstMeta get kCrateApiMlsApiLoadKeyPackageFromStorageConstMeta =>
-      const TaskConstMeta(
-        debugName: "load_key_package_from_storage",
-        argNames: ["encodedKeyPackage"],
-      );
-
-  @override
-  Future<String> crateApiMlsApiParseKeyPackage(
-      {required String encodedKeyPackage}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(encodedKeyPackage, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 11, port: port_);
+            funcId: 9, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_String,
         decodeErrorData: null,
       ),
       constMeta: kCrateApiMlsApiParseKeyPackageConstMeta,
-      argValues: [encodedKeyPackage],
+      argValues: [event],
       apiImpl: this,
     ));
   }
@@ -430,52 +374,25 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiMlsApiParseKeyPackageConstMeta =>
       const TaskConstMeta(
         debugName: "parse_key_package",
-        argNames: ["encodedKeyPackage"],
-      );
-
-  @override
-  Future<String> crateApiMlsApiPreviewWelcomeEvent(
-      {required List<int> serializedWelcomeMessage}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(serializedWelcomeMessage, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 12, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_String,
-        decodeErrorData: sse_decode_AnyhowException,
-      ),
-      constMeta: kCrateApiMlsApiPreviewWelcomeEventConstMeta,
-      argValues: [serializedWelcomeMessage],
-      apiImpl: this,
-    ));
-  }
-
-  TaskConstMeta get kCrateApiMlsApiPreviewWelcomeEventConstMeta =>
-      const TaskConstMeta(
-        debugName: "preview_welcome_event",
-        argNames: ["serializedWelcomeMessage"],
+        argNames: ["event"],
       );
 
   @override
   Future<Uint8List> crateApiMlsApiProcessMessageForGroup(
-      {required List<int> groupId, required List<int> serializedMessage}) {
+      {required String messageEvent}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(groupId, serializer);
-        sse_encode_list_prim_u_8_loose(serializedMessage, serializer);
+        sse_encode_String(messageEvent, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 13, port: port_);
+            funcId: 10, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiMlsApiProcessMessageForGroupConstMeta,
-      argValues: [groupId, serializedMessage],
+      argValues: [messageEvent],
       apiImpl: this,
     ));
   }
@@ -483,7 +400,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiMlsApiProcessMessageForGroupConstMeta =>
       const TaskConstMeta(
         debugName: "process_message_for_group",
-        argNames: ["groupId", "serializedMessage"],
+        argNames: ["messageEvent"],
       );
 
   @protected
@@ -520,6 +437,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   String? dco_decode_opt_String(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_String(raw);
+  }
+
+  @protected
+  List<String>? dco_decode_opt_list_String(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_list_String(raw);
   }
 
   @protected
@@ -599,6 +522,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
     if (sse_decode_bool(deserializer)) {
       return (sse_decode_String(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  List<String>? sse_decode_opt_list_String(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_list_String(deserializer));
     } else {
       return null;
     }
@@ -687,6 +621,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self != null, serializer);
     if (self != null) {
       sse_encode_String(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_list_String(
+      List<String>? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_list_String(self, serializer);
     }
   }
 

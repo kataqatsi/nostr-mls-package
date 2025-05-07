@@ -13,39 +13,33 @@ Future<void> initNostrMls({required String path, String? identity}) =>
     RustLib.instance.api
         .crateApiMlsApiInitNostrMls(path: path, identity: identity);
 
-String getCiphersuite() => RustLib.instance.api.crateApiMlsApiGetCiphersuite();
+Future<String> getCiphersuite() =>
+    RustLib.instance.api.crateApiMlsApiGetCiphersuite();
 
-List<String> getExtensions() =>
+Future<List<String>> getExtensions() =>
     RustLib.instance.api.crateApiMlsApiGetExtensions();
 
-Future<String> createKeyPackageForEvent({required String publicKey}) =>
-    RustLib.instance.api
-        .crateApiMlsApiCreateKeyPackageForEvent(publicKey: publicKey);
+Future<String> createKeyPackageForEvent(
+        {required String publicKey, List<String>? relay}) =>
+    RustLib.instance.api.crateApiMlsApiCreateKeyPackageForEvent(
+        publicKey: publicKey, relay: relay);
 
-Future<String> parseKeyPackage({required String encodedKeyPackage}) =>
-    RustLib.instance.api
-        .crateApiMlsApiParseKeyPackage(encodedKeyPackage: encodedKeyPackage);
-
-Future<String> deleteKeyPackageFromStorage(
-        {required String encodedKeyPackage}) =>
-    RustLib.instance.api.crateApiMlsApiDeleteKeyPackageFromStorage(
-        encodedKeyPackage: encodedKeyPackage);
-
-Future<String> loadKeyPackageFromStorage({required String encodedKeyPackage}) =>
-    RustLib.instance.api.crateApiMlsApiLoadKeyPackageFromStorage(
-        encodedKeyPackage: encodedKeyPackage);
+Future<String> parseKeyPackage({required String event}) =>
+    RustLib.instance.api.crateApiMlsApiParseKeyPackage(event: event);
 
 Future<String> createGroup(
         {required String groupName,
         required String groupDescription,
-        required List<String> groupMembersKeyPackages,
+        required List<String> groupMembersKeyPackageEvents,
+        required List<String> groupMembersPubkeys,
         required String groupCreatorPublicKey,
         required List<String> groupAdminPublicKeys,
         required List<String> relays}) =>
     RustLib.instance.api.crateApiMlsApiCreateGroup(
         groupName: groupName,
         groupDescription: groupDescription,
-        groupMembersKeyPackages: groupMembersKeyPackages,
+        groupMembersKeyPackageEvents: groupMembersKeyPackageEvents,
+        groupMembersPubkeys: groupMembersPubkeys,
         groupCreatorPublicKey: groupCreatorPublicKey,
         groupAdminPublicKeys: groupAdminPublicKeys,
         relays: relays);
@@ -55,22 +49,14 @@ Future<Uint8List> createMessageForGroup(
     RustLib.instance.api.crateApiMlsApiCreateMessageForGroup(
         groupId: groupId, messageEvent: messageEvent);
 
-Future<(String, BigInt)> exportSecretAsHexSecretKeyAndEpoch(
-        {required List<int> groupId}) =>
+Future<(String, BigInt)> exportSecret({required List<int> groupId}) =>
+    RustLib.instance.api.crateApiMlsApiExportSecret(groupId: groupId);
+
+Future<Uint8List> processMessageForGroup({required String messageEvent}) =>
     RustLib.instance.api
-        .crateApiMlsApiExportSecretAsHexSecretKeyAndEpoch(groupId: groupId);
-
-Future<Uint8List> processMessageForGroup(
-        {required List<int> groupId, required List<int> serializedMessage}) =>
-    RustLib.instance.api.crateApiMlsApiProcessMessageForGroup(
-        groupId: groupId, serializedMessage: serializedMessage);
-
-Future<String> previewWelcomeEvent(
-        {required List<int> serializedWelcomeMessage}) =>
-    RustLib.instance.api.crateApiMlsApiPreviewWelcomeEvent(
-        serializedWelcomeMessage: serializedWelcomeMessage);
+        .crateApiMlsApiProcessMessageForGroup(messageEvent: messageEvent);
 
 Future<String> joinGroupFromWelcome(
-        {required List<int> serializedWelcomeMessage}) =>
+        {required List<int> wrapperEventId, required String messageEvent}) =>
     RustLib.instance.api.crateApiMlsApiJoinGroupFromWelcome(
-        serializedWelcomeMessage: serializedWelcomeMessage);
+        wrapperEventId: wrapperEventId, messageEvent: messageEvent);

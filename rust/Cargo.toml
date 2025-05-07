@@ -8,14 +8,14 @@ crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
 flutter_rust_bridge = "=2.7.0"
-pretty_env_logger = "0.5"
 tracing = "0.1"
 tracing-subscriber = "0.3.0"
 hex = "0.4"
 tokio = { version = "1", features = ["full"] }
-nostr-openmls = { git = "https://github.com/wcat7/nostr-openmls", rev = "22aae5f31da720103158c6cc46e77f129be8c8fb"}
-nostr-sdk = {version = "0.37", features = ["nip44"]}
+nostr-mls = { git = "https://github.com/wcat7/nostr"}
+nostr-mls-sqlite-storage = { git = "https://github.com/wcat7/nostr"}
 lazy_static = "1.4"
 anyhow = "1.0"
 serde_json = "1.0"
 serde = "1.0.215"
+futures = "0.3"
