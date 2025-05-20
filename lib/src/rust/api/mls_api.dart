@@ -9,28 +9,42 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 // These types are ignored because they are not used by any `pub` functions: `NOSTR_MLS`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `deref`, `initialize`
 
-Future<void> initNostrMls({required String path, String? identity}) =>
+/// Initialize the NostrMls instance
+/// Returns: JSON {"status": "success"} on success, or error message on failure
+Future<String> initNostrMls({required String path, String? identity}) =>
     RustLib.instance.api
         .crateApiMlsApiInitNostrMls(path: path, identity: identity);
 
+/// Get the current ciphersuite
+/// Returns: JSON formatted ciphersuite information
 Future<String> getCiphersuite() =>
     RustLib.instance.api.crateApiMlsApiGetCiphersuite();
 
-Future<List<String>> getExtensions() =>
+/// Get the list of enabled extensions
+/// Returns: JSON formatted list of extensions
+Future<String> getExtensions() =>
     RustLib.instance.api.crateApiMlsApiGetExtensions();
 
+/// Create a key package for an event
+/// Returns: JSON formatted key package information, including encoded key package and tags
 Future<String> createKeyPackageForEvent(
         {required String publicKey, List<String>? relay}) =>
     RustLib.instance.api.crateApiMlsApiCreateKeyPackageForEvent(
         publicKey: publicKey, relay: relay);
 
-Future<String> parseKeyPackage({required String event}) =>
-    RustLib.instance.api.crateApiMlsApiParseKeyPackage(event: event);
+/// Parse a key package from serialized key package
+/// Returns: JSON formatted key package information
+Future<String> parseSerializedKeyPackage(
+        {required String serializedKeyPackage}) =>
+    RustLib.instance.api.crateApiMlsApiParseSerializedKeyPackage(
+        serializedKeyPackage: serializedKeyPackage);
 
+/// Create a group
+/// Returns: JSON formatted group information
 Future<String> createGroup(
         {required String groupName,
         required String groupDescription,
-        required List<String> groupMembersKeyPackageEvents,
+        required List<String> groupMembersSerializedKeyPackages,
         required List<String> groupMembersPubkeys,
         required String groupCreatorPublicKey,
         required List<String> groupAdminPublicKeys,
@@ -38,25 +52,48 @@ Future<String> createGroup(
     RustLib.instance.api.crateApiMlsApiCreateGroup(
         groupName: groupName,
         groupDescription: groupDescription,
-        groupMembersKeyPackageEvents: groupMembersKeyPackageEvents,
+        groupMembersSerializedKeyPackages: groupMembersSerializedKeyPackages,
         groupMembersPubkeys: groupMembersPubkeys,
         groupCreatorPublicKey: groupCreatorPublicKey,
         groupAdminPublicKeys: groupAdminPublicKeys,
         relays: relays);
 
-Future<Uint8List> createMessageForGroup(
-        {required List<int> groupId, required String messageEvent}) =>
+/// Create a message for a group
+/// Parameters: group_id - byte array of group ID, rumor_event_string - JSON string of the event
+/// Returns: JSON formatted message information
+Future<String> createMessageForGroup(
+        {required List<int> groupId, required String rumorEventString}) =>
     RustLib.instance.api.crateApiMlsApiCreateMessageForGroup(
-        groupId: groupId, messageEvent: messageEvent);
+        groupId: groupId, rumorEventString: rumorEventString);
 
-Future<(String, BigInt)> exportSecret({required List<int> groupId}) =>
+/// Export group secret
+/// Parameters: group_id - byte array of group ID
+/// Returns: JSON formatted secret information, including secret key and epoch
+Future<String> exportSecret({required List<int> groupId}) =>
     RustLib.instance.api.crateApiMlsApiExportSecret(groupId: groupId);
 
-Future<Uint8List> processMessageForGroup({required String messageEvent}) =>
-    RustLib.instance.api
-        .crateApiMlsApiProcessMessageForGroup(messageEvent: messageEvent);
+/// Process a message for a group
+/// Parameters: group_id - byte array of group ID, serialized_message - serialized message
+/// Returns: JSON formatted processing result
+Future<String> processMessageForGroup(
+        {required List<int> groupId, required String serializedMessage}) =>
+    RustLib.instance.api.crateApiMlsApiProcessMessageForGroup(
+        groupId: groupId, serializedMessage: serializedMessage);
 
+/// Preview a group from a welcome message without joining it
+/// Parameters: wrapper_event_id - byte array of event ID, rumor_event_string - JSON string of the event
+/// Returns: JSON formatted group preview information
+Future<String> previewGroupFromWelcome(
+        {required List<int> wrapperEventId,
+        required String rumorEventString}) =>
+    RustLib.instance.api.crateApiMlsApiPreviewGroupFromWelcome(
+        wrapperEventId: wrapperEventId, rumorEventString: rumorEventString);
+
+/// Join a group from a welcome message
+/// Parameters: wrapper_event_id - byte array of event ID, rumor_event_string - JSON string of the event
+/// Returns: JSON formatted join result
 Future<String> joinGroupFromWelcome(
-        {required List<int> wrapperEventId, required String messageEvent}) =>
+        {required List<int> wrapperEventId,
+        required String rumorEventString}) =>
     RustLib.instance.api.crateApiMlsApiJoinGroupFromWelcome(
-        wrapperEventId: wrapperEventId, messageEvent: messageEvent);
+        wrapperEventId: wrapperEventId, rumorEventString: rumorEventString);
