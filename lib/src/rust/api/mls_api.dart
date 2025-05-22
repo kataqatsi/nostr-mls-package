@@ -32,13 +32,6 @@ Future<String> createKeyPackageForEvent(
     RustLib.instance.api.crateApiMlsApiCreateKeyPackageForEvent(
         publicKey: publicKey, relay: relay);
 
-/// Parse a key package from serialized key package
-/// Returns: JSON formatted key package information
-Future<String> parseSerializedKeyPackage(
-        {required String serializedKeyPackage}) =>
-    RustLib.instance.api.crateApiMlsApiParseSerializedKeyPackage(
-        serializedKeyPackage: serializedKeyPackage);
-
 /// Create a group
 /// Returns: JSON formatted group information
 Future<String> createGroup(
@@ -75,10 +68,9 @@ Future<String> exportSecret({required List<int> groupId}) =>
 /// Process a message for a group
 /// Parameters: group_id - byte array of group ID, serialized_message - serialized message
 /// Returns: JSON formatted processing result
-Future<String> processMessageForGroup(
-        {required List<int> groupId, required String serializedMessage}) =>
-    RustLib.instance.api.crateApiMlsApiProcessMessageForGroup(
-        groupId: groupId, serializedMessage: serializedMessage);
+Future<String> processMessageForGroup({required String eventString}) =>
+    RustLib.instance.api
+        .crateApiMlsApiProcessMessageForGroup(eventString: eventString);
 
 /// Preview a group from a welcome message without joining it
 /// Parameters: wrapper_event_id - byte array of event ID, rumor_event_string - JSON string of the event
@@ -97,3 +89,37 @@ Future<String> joinGroupFromWelcome(
         required String rumorEventString}) =>
     RustLib.instance.api.crateApiMlsApiJoinGroupFromWelcome(
         wrapperEventId: wrapperEventId, rumorEventString: rumorEventString);
+
+Future<String> getMembers({required List<int> groupId}) =>
+    RustLib.instance.api.crateApiMlsApiGetMembers(groupId: groupId);
+
+/// Add members to an existing group
+/// Parameters: group_id - byte array of group ID, serialized_key_packages - array of serialized key packages
+/// Returns: JSON formatted result containing serialized commit and welcome messages
+Future<String> addMembers(
+        {required List<int> groupId,
+        required List<String> serializedKeyPackages}) =>
+    RustLib.instance.api.crateApiMlsApiAddMembers(
+        groupId: groupId, serializedKeyPackages: serializedKeyPackages);
+
+/// Remove members from a group
+/// Parameters: group_id - byte array of group ID, member_indices - array of member indices to remove
+/// Returns: JSON formatted result containing serialized commit message
+Future<String> removeMembers(
+        {required List<int> groupId, required List<int> memberIndices}) =>
+    RustLib.instance.api.crateApiMlsApiRemoveMembers(
+        groupId: groupId, memberIndices: memberIndices);
+
+/// Commit a proposal
+/// Parameters: group_id - byte array of group ID, proposal - serialized proposal
+/// Returns: JSON formatted result containing commit and welcome messages
+Future<String> commitProposal(
+        {required List<int> groupId, required String proposal}) =>
+    RustLib.instance.api
+        .crateApiMlsApiCommitProposal(groupId: groupId, proposal: proposal);
+
+/// Leave a group
+/// Parameters: group_id - byte array of group ID
+/// Returns: JSON formatted result containing serialized leave message
+Future<String> leaveGroup({required List<int> groupId}) =>
+    RustLib.instance.api.crateApiMlsApiLeaveGroup(groupId: groupId);
