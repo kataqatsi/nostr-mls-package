@@ -4,6 +4,7 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These types are ignored because they are not used by any `pub` functions: `NOSTR_MLS`
@@ -59,6 +60,18 @@ Future<String> createMessageForGroup(
     RustLib.instance.api.crateApiMlsApiCreateMessageForGroup(
         groupId: groupId, rumorEventString: rumorEventString);
 
+/// Create a commit message for a group
+/// Parameters: group_id - byte array of group ID, serialized_commit - serialized commit
+/// Returns: JSON formatted message information
+Future<String> createCommitMessageForGroup(
+        {required List<int> groupId,
+        required List<int> serializedCommit,
+        required U8Array32 secretKey}) =>
+    RustLib.instance.api.crateApiMlsApiCreateCommitMessageForGroup(
+        groupId: groupId,
+        serializedCommit: serializedCommit,
+        secretKey: secretKey);
+
 /// Export group secret
 /// Parameters: group_id - byte array of group ID
 /// Returns: JSON formatted secret information, including secret key and epoch
@@ -103,12 +116,12 @@ Future<String> addMembers(
         groupId: groupId, serializedKeyPackages: serializedKeyPackages);
 
 /// Remove members from a group
-/// Parameters: group_id - byte array of group ID, member_indices - array of member indices to remove
+/// Parameters: group_id - byte array of group ID, member_pubkeys - array of member public keys to remove
 /// Returns: JSON formatted result containing serialized commit message
 Future<String> removeMembers(
-        {required List<int> groupId, required List<int> memberIndices}) =>
+        {required List<int> groupId, required List<String> memberPubkeys}) =>
     RustLib.instance.api.crateApiMlsApiRemoveMembers(
-        groupId: groupId, memberIndices: memberIndices);
+        groupId: groupId, memberPubkeys: memberPubkeys);
 
 /// Commit a proposal
 /// Parameters: group_id - byte array of group ID, proposal - serialized proposal
@@ -123,3 +136,17 @@ Future<String> commitProposal(
 /// Returns: JSON formatted result containing serialized leave message
 Future<String> leaveGroup({required List<int> groupId}) =>
     RustLib.instance.api.crateApiMlsApiLeaveGroup(groupId: groupId);
+
+class U8Array32 extends NonGrowableListView<int> {
+  static const arraySize = 32;
+
+  @internal
+  Uint8List get inner => _inner;
+  final Uint8List _inner;
+
+  U8Array32(this._inner)
+      : assert(_inner.length == arraySize),
+        super(_inner);
+
+  U8Array32.init() : this(Uint8List(arraySize));
+}
