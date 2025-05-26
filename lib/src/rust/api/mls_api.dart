@@ -106,6 +106,12 @@ Future<String> joinGroupFromWelcome(
 Future<String> getMembers({required List<int> groupId}) =>
     RustLib.instance.api.crateApiMlsApiGetMembers(groupId: groupId);
 
+/// Get group information by group ID
+/// Parameters: group_id - byte array of group ID
+/// Returns: JSON formatted group information including group ID, members, and nostr group data
+Future<String> getGroup({required List<int> groupId}) =>
+    RustLib.instance.api.crateApiMlsApiGetGroup(groupId: groupId);
+
 /// Add members to an existing group
 /// Parameters: group_id - byte array of group ID, serialized_key_packages - array of serialized key packages
 /// Returns: JSON formatted result containing serialized commit and welcome messages

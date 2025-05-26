@@ -388,30 +388,21 @@ pub fn join_group_from_welcome(
     let event_id =
         EventId::from_slice(&wrapper_event_id).map_err(|e| anyhow!("Invalid event ID: {}", e))?;
 
-    nostr_mls
+    let welcome = nostr_mls
         .process_welcome(&event_id, &rumor_event)
         .map_err(|e| anyhow!("Failed to process welcome: {}", e))?;
 
-    let pending_welcomes = nostr_mls
-        .get_pending_welcomes()
-        .map_err(|e| anyhow!("Failed to get pending welcomes: {}", e))?;
-    let welcome = pending_welcomes.first().unwrap();
-    nostr_mls
-        .accept_welcome(welcome)
-        .map_err(|e| anyhow!("Failed to accept welcome: {}", e))?;
-
-    let mls_group = nostr_mls.get_groups()?.first().unwrap().clone();
-    let mls_group_id = GroupId::from_slice(mls_group.mls_group_id.as_slice());
+    let mls_group_id = GroupId::from_slice(welcome.mls_group_id.as_slice());
 
     let members: Vec<String> = match nostr_mls.get_members(&mls_group_id) {
         Ok(members) => members.iter().map(|pk| pk.to_string()).collect(),
         Err(e) => return Err(anyhow!("Failed to get members: {}", e)),
     };
 
-    let nostr_group_id = mls_group.nostr_group_id;
-    let name = mls_group.name;
-    let description = mls_group.description;
-    let admin_pubkeys = mls_group.admin_pubkeys;
+    let nostr_group_id = welcome.nostr_group_id;
+    let name = welcome.group_name;
+    let description = welcome.group_description;
+    let admin_pubkeys = welcome.group_admin_pubkeys;
 
     let output = json!({
         "mls_group_id": mls_group_id,
@@ -447,6 +438,46 @@ pub fn get_members(group_id: Vec<u8>) -> Result<String> {
         "members": members_str
     })
     .to_string())
+}
+
+/// Get group information by group ID
+/// Parameters: group_id - byte array of group ID
+/// Returns: JSON formatted group information including group ID, members, and nostr group data
+pub fn get_group(group_id: Vec<u8>) -> Result<String> {
+    let mls = NOSTR_MLS
+        .lock()
+        .map_err(|_| anyhow!("Failed to acquire NOSTR_MLS lock"))?;
+    let nostr_mls = mls
+        .as_ref()
+        .ok_or_else(|| anyhow!("NostrMls is not initialized"))?;
+
+    let group_id = GroupId::from_slice(&group_id);
+
+    // Get the group information
+    let group = nostr_mls
+        .get_group(&group_id)
+        .map_err(|e| anyhow!("Failed to get group: {}", e))?
+        .ok_or_else(|| anyhow!("Group not found"))?;
+
+    // Get the members
+    let members = nostr_mls
+        .get_members(&group_id)
+        .map_err(|e| anyhow!("Failed to get members: {}", e))?;
+
+    let members_str: Vec<String> = members.iter().map(|pk| pk.to_string()).collect();
+
+    let output = json!({
+        "mls_group_id": group_id,
+        "members": members_str,
+        "nostr_group_data": {
+            "nostr_group_id": group.nostr_group_id,
+            "name": group.name,
+            "description": group.description,
+            "admin_pubkeys": group.admin_pubkeys,
+        }
+    });
+
+    Ok(output.to_string())
 }
 
 /// Add members to an existing group
