@@ -308,18 +308,36 @@ pub fn process_message_for_group(event_string: String) -> Result<String> {
     let event: Event = serde_json::from_str(&event_string)
         .map_err(|e| anyhow!("Failed to deserialize event: {}", e))?;
 
-    let event = nostr_mls
-        .process_message(&event)
-        .map_err(|e| anyhow!("Failed to process message: {}", e))?
-        .ok_or_else(|| anyhow!("No event returned"))?;
+    let result = nostr_mls.process_message(&event).map_err(|e| anyhow!("Failed to process message: {}", e))?;
 
-    let event_json =
-        serde_json::to_value(&event).map_err(|e| anyhow!("Failed to serialize event: {}", e))?;
+    // Handle both message and member_changes
+    let message_json = match result.message {
+        Some(message) => {
+            serde_json::to_value(&message)
+                .map_err(|e| anyhow!("Failed to serialize message: {}", e))?
+        }
+        None => serde_json::Value::Null,
+    };
+
+    let (added_members_json, removed_members_json) = match result.member_changes {
+        Some(member_changes) => {
+            let added_members: Vec<String> = member_changes.added_members;
+            let removed_members: Vec<String> = member_changes.removed_members;
+            (
+                serde_json::to_value(added_members)
+                    .map_err(|e| anyhow!("Failed to serialize added_members: {}", e))?,
+                serde_json::to_value(removed_members)
+                    .map_err(|e| anyhow!("Failed to serialize removed_members: {}", e))?,
+            )
+        }
+        None => (serde_json::Value::Null, serde_json::Value::Null),
+    };
 
     Ok(json!({
-        "event": event_json
-    })
-    .to_string())
+        "message": message_json,
+        "added_members": added_members_json,
+        "removed_members": removed_members_json
+    }).to_string())
 }
 
 /// Preview a group from a welcome message without joining it
