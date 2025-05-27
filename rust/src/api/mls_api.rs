@@ -14,7 +14,7 @@ lazy_static! {
 
 /// Initialize the NostrMls instance
 /// Returns: JSON {"status": "success"} on success, or error message on failure
-pub fn init_nostr_mls(path: String, identity: Option<String>) -> Result<String> {
+pub fn init_nostr_mls(path: String, identity: Option<String>, password: Option<String>) -> Result<String> {
     let mut mls = NOSTR_MLS
         .lock()
         .map_err(|_| anyhow!("Failed to acquire NOSTR_MLS lock"))?;
@@ -27,7 +27,7 @@ pub fn init_nostr_mls(path: String, identity: Option<String>) -> Result<String> 
         PathBuf::from(path).join(identity.as_deref().unwrap_or("default").to_owned() + "-mls.db");
 
     let nostr_mls = NostrMls::new(
-        NostrMlsSqliteStorage::new(db_path)
+        NostrMlsSqliteStorage::new_with_password(db_path, password.as_deref())
             .map_err(|e| anyhow!("Failed to initialize storage: {}", e))?,
     );
 

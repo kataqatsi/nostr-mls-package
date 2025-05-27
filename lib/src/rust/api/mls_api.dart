@@ -12,9 +12,10 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 /// Initialize the NostrMls instance
 /// Returns: JSON {"status": "success"} on success, or error message on failure
-Future<String> initNostrMls({required String path, String? identity}) =>
-    RustLib.instance.api
-        .crateApiMlsApiInitNostrMls(path: path, identity: identity);
+Future<String> initNostrMls(
+        {required String path, String? identity, String? password}) =>
+    RustLib.instance.api.crateApiMlsApiInitNostrMls(
+        path: path, identity: identity, password: password);
 
 /// Get the current ciphersuite
 /// Returns: JSON formatted ciphersuite information

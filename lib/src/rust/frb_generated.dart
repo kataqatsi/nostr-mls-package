@@ -115,7 +115,7 @@ abstract class RustLibApi extends BaseApi {
   Future<String> crateApiMlsApiGetMembers({required List<int> groupId});
 
   Future<String> crateApiMlsApiInitNostrMls(
-      {required String path, String? identity});
+      {required String path, String? identity, String? password});
 
   Future<String> crateApiMlsApiJoinGroupFromWelcome(
       {required List<int> wrapperEventId, required String rumorEventString});
@@ -453,12 +453,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<String> crateApiMlsApiInitNostrMls(
-      {required String path, String? identity}) {
+      {required String path, String? identity, String? password}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         sse_encode_opt_String(identity, serializer);
+        sse_encode_opt_String(password, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 12, port: port_);
       },
@@ -467,14 +468,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiMlsApiInitNostrMlsConstMeta,
-      argValues: [path, identity],
+      argValues: [path, identity, password],
       apiImpl: this,
     ));
   }
 
   TaskConstMeta get kCrateApiMlsApiInitNostrMlsConstMeta => const TaskConstMeta(
         debugName: "init_nostr_mls",
-        argNames: ["path", "identity"],
+        argNames: ["path", "identity", "password"],
       );
 
   @override

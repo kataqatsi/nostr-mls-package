@@ -487,12 +487,16 @@ fn wire__crate__api__mls_api__init_nostr_mls_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_path = <String>::sse_decode(&mut deserializer);
             let api_identity = <Option<String>>::sse_decode(&mut deserializer);
+            let api_password = <Option<String>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
-                        let output_ok =
-                            crate::api::mls_api::init_nostr_mls(api_path, api_identity)?;
+                        let output_ok = crate::api::mls_api::init_nostr_mls(
+                            api_path,
+                            api_identity,
+                            api_password,
+                        )?;
                         Ok(output_ok)
                     })(),
                 )
