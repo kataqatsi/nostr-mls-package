@@ -334,24 +334,6 @@ pub fn process_message_for_group(event_string: String) -> Result<String> {
         None => (serde_json::Value::Null, serde_json::Value::Null),
     };
 
-    // // Handle commit
-    // let commit_json = match result.commit {
-    //     Some(commit) => {
-    //         serde_json::to_value(commit)
-    //             .map_err(|e| anyhow!("Failed to serialize commit: {}", e))?
-    //     }
-    //     None => serde_json::Value::Null,
-    // };
-
-    // // Handle welcome
-    // let welcome_json = match result.welcome {
-    //     Some(welcome) => {
-    //         serde_json::to_value(welcome)
-    //             .map_err(|e| anyhow!("Failed to serialize welcome: {}", e))?
-    //     }
-    //     None => serde_json::Value::Null,
-    // };
-
     Ok(json!({
         "message": message_json,
         "added_members": added_members_json,
