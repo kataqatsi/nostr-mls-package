@@ -603,3 +603,39 @@ pub fn leave_group(group_id: Vec<u8>) -> Result<String> {
     })
     .to_string())
 }
+
+/// Get key package from storage
+/// Parameters: serialized_key_package - serialized key package string
+/// Returns: JSON formatted key package information
+pub fn get_key_package_from_storage(serialized_key_package: String) -> Result<String> {
+    let mls = NOSTR_MLS
+        .lock()
+        .map_err(|_| anyhow!("Failed to acquire NOSTR_MLS lock"))?;
+    let nostr_mls = mls
+        .as_ref()
+        .ok_or_else(|| anyhow!("NostrMls is not initialized"))?;
+
+    // First parse the serialized key package
+    let key_package = nostr_mls
+        .parse_serialized_key_package(&serialized_key_package)
+        .map_err(|e| anyhow!("Failed to parse key package: {}", e))?;
+
+    // Then try to get it from storage
+    let key_package_bundle = nostr_mls
+        .get_key_package_from_storage(&key_package)
+        .map_err(|e| anyhow!("Failed to get key package from storage: {}", e))?;
+
+    // Return the result
+    let result = match key_package_bundle {
+        Some(bundle) => json!({
+            "found": true,
+            "key_package": format!("{:?}", bundle.key_package()),
+        }),
+        None => json!({
+            "found": false,
+            "key_package": null,
+        })
+    };
+
+    Ok(result.to_string())
+}

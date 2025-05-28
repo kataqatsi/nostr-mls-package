@@ -144,6 +144,14 @@ Future<String> commitProposal(
 Future<String> leaveGroup({required List<int> groupId}) =>
     RustLib.instance.api.crateApiMlsApiLeaveGroup(groupId: groupId);
 
+/// Get key package from storage
+/// Parameters: serialized_key_package - serialized key package string
+/// Returns: JSON formatted key package information
+Future<String> getKeyPackageFromStorage(
+        {required String serializedKeyPackage}) =>
+    RustLib.instance.api.crateApiMlsApiGetKeyPackageFromStorage(
+        serializedKeyPackage: serializedKeyPackage);
+
 class U8Array32 extends NonGrowableListView<int> {
   static const arraySize = 32;
 
