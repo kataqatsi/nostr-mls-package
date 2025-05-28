@@ -310,7 +310,7 @@ pub fn process_message_for_group(event_string: String) -> Result<String> {
 
     let result = nostr_mls.process_message(&event).map_err(|e| anyhow!("Failed to process message: {}", e))?;
 
-    // Handle both message and member_changes
+    // Handle message
     let message_json = match result.message {
         Some(message) => {
             serde_json::to_value(&message)
@@ -319,6 +319,7 @@ pub fn process_message_for_group(event_string: String) -> Result<String> {
         None => serde_json::Value::Null,
     };
 
+    // Handle member_changes
     let (added_members_json, removed_members_json) = match result.member_changes {
         Some(member_changes) => {
             let added_members: Vec<String> = member_changes.added_members;
@@ -333,10 +334,30 @@ pub fn process_message_for_group(event_string: String) -> Result<String> {
         None => (serde_json::Value::Null, serde_json::Value::Null),
     };
 
+    // // Handle commit
+    // let commit_json = match result.commit {
+    //     Some(commit) => {
+    //         serde_json::to_value(commit)
+    //             .map_err(|e| anyhow!("Failed to serialize commit: {}", e))?
+    //     }
+    //     None => serde_json::Value::Null,
+    // };
+
+    // // Handle welcome
+    // let welcome_json = match result.welcome {
+    //     Some(welcome) => {
+    //         serde_json::to_value(welcome)
+    //             .map_err(|e| anyhow!("Failed to serialize welcome: {}", e))?
+    //     }
+    //     None => serde_json::Value::Null,
+    // };
+
     Ok(json!({
         "message": message_json,
         "added_members": added_members_json,
-        "removed_members": removed_members_json
+        "removed_members": removed_members_json,
+        "commit": result.commit,
+        "welcome": result.welcome
     }).to_string())
 }
 
