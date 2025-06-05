@@ -376,8 +376,17 @@ pub fn preview_group_from_welcome(
         .iter()
         .map(|pk| pk.to_string())
         .collect();
-
+    let members: Vec<String> = welcome_preview.staged_welcome.members()
+        .filter_map(|m| {
+            let credentials = BasicCredential::try_from(m.credential).ok()?;
+            let hex_bytes = credentials.identity();
+            let hex_str = std::str::from_utf8(hex_bytes).ok()?;
+            let public_key = PublicKey::from_hex(hex_str).ok()?;
+            Some(public_key.to_string())
+        })
+        .collect();
     let output = json!({
+        "members": members,
         "nostr_group_data": {
             "nostr_group_id": nostr_group_id,
             "name": name,
