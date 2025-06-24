@@ -386,6 +386,7 @@ pub fn preview_group_from_welcome(
         })
         .collect();
     let output = json!({
+        "mls_group_id": welcome_preview.staged_welcome.group_context().group_id(),
         "members": members,
         "nostr_group_data": {
             "nostr_group_id": nostr_group_id,
