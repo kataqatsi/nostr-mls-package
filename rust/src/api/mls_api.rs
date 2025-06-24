@@ -255,10 +255,8 @@ pub fn create_commit_message_for_group(
         .as_ref()
         .ok_or_else(|| anyhow!("NostrMls is not initialized"))?;
 
-    let group_id = nostr_group_id.as_bytes();
-
     let event = nostr_mls
-        .create_commit_proposal_message(&group_id, &serialized_commit, secret_key)
+        .create_commit_proposal_message(nostr_group_id, &serialized_commit, secret_key)
         .map_err(|e| anyhow!("Failed to create message: {}", e))?;
 
     let event_json =

@@ -1171,7 +1171,7 @@ dependencies = [
 [[package]]
 name = "nostr"
 version = "0.41.0"
-source = "git+https://github.com/wcat7/nostr#21506a2d9358457d1d0fb000d709693318b29291"
+source = "git+https://github.com/wcat7/nostr#116c5ff766cd8d63af4be3257ee836f1987b3705"
 dependencies = [
  "base64",
  "bech32",
@@ -1194,7 +1194,7 @@ dependencies = [
 [[package]]
 name = "nostr-mls"
 version = "0.41.0"
-source = "git+https://github.com/wcat7/nostr#21506a2d9358457d1d0fb000d709693318b29291"
+source = "git+https://github.com/wcat7/nostr#116c5ff766cd8d63af4be3257ee836f1987b3705"
 dependencies = [
  "nostr",
  "nostr-mls-storage",
@@ -1209,7 +1209,7 @@ dependencies = [
 [[package]]
 name = "nostr-mls-sqlite-storage"
 version = "0.41.0"
-source = "git+https://github.com/wcat7/nostr#21506a2d9358457d1d0fb000d709693318b29291"
+source = "git+https://github.com/wcat7/nostr#116c5ff766cd8d63af4be3257ee836f1987b3705"
 dependencies = [
  "nostr",
  "nostr-mls-storage",
@@ -1225,7 +1225,7 @@ dependencies = [
 [[package]]
 name = "nostr-mls-storage"
 version = "0.41.0"
-source = "git+https://github.com/wcat7/nostr#21506a2d9358457d1d0fb000d709693318b29291"
+source = "git+https://github.com/wcat7/nostr#116c5ff766cd8d63af4be3257ee836f1987b3705"
 dependencies = [
  "nostr",
  "openmls",
