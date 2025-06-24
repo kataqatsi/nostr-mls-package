@@ -244,7 +244,7 @@ pub fn create_message_for_group(group_id: Vec<u8>, rumor_event_string: String) -
 /// Parameters: group_id - byte array of group ID, serialized_commit - serialized commit
 /// Returns: JSON formatted message information
 pub fn create_commit_message_for_group(
-    group_id: Vec<u8>,
+    nostr_group_id: String,
     serialized_commit: Vec<u8>,
     secret_key: &[u8; 32],
 ) -> Result<String> {
@@ -255,7 +255,7 @@ pub fn create_commit_message_for_group(
         .as_ref()
         .ok_or_else(|| anyhow!("NostrMls is not initialized"))?;
 
-    let group_id = GroupId::from_slice(&group_id);
+    let group_id = nostr_group_id.as_bytes();
 
     let event = nostr_mls
         .create_commit_proposal_message(&group_id, &serialized_commit, secret_key)

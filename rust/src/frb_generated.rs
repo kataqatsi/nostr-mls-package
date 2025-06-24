@@ -143,7 +143,7 @@ fn wire__crate__api__mls_api__create_commit_message_for_group_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_group_id = <Vec<u8>>::sse_decode(&mut deserializer);
+            let api_nostr_group_id = <String>::sse_decode(&mut deserializer);
             let api_serialized_commit = <Vec<u8>>::sse_decode(&mut deserializer);
             let api_secret_key = <[u8; 32]>::sse_decode(&mut deserializer);
             deserializer.end();
@@ -151,7 +151,7 @@ fn wire__crate__api__mls_api__create_commit_message_for_group_impl(
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok = crate::api::mls_api::create_commit_message_for_group(
-                            api_group_id,
+                            api_nostr_group_id,
                             api_serialized_commit,
                             &api_secret_key,
                         )?;

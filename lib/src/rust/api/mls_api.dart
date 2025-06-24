@@ -65,11 +65,11 @@ Future<String> createMessageForGroup(
 /// Parameters: group_id - byte array of group ID, serialized_commit - serialized commit
 /// Returns: JSON formatted message information
 Future<String> createCommitMessageForGroup(
-        {required List<int> groupId,
+        {required String nostrGroupId,
         required List<int> serializedCommit,
         required U8Array32 secretKey}) =>
     RustLib.instance.api.crateApiMlsApiCreateCommitMessageForGroup(
-        groupId: groupId,
+        nostrGroupId: nostrGroupId,
         serializedCommit: serializedCommit,
         secretKey: secretKey);
 

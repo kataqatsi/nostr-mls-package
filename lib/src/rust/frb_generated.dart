@@ -85,7 +85,7 @@ abstract class RustLibApi extends BaseApi {
       {required List<int> groupId, required String proposal});
 
   Future<String> crateApiMlsApiCreateCommitMessageForGroup(
-      {required List<int> groupId,
+      {required String nostrGroupId,
       required List<int> serializedCommit,
       required U8Array32 secretKey});
 
@@ -199,13 +199,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<String> crateApiMlsApiCreateCommitMessageForGroup(
-      {required List<int> groupId,
+      {required String nostrGroupId,
       required List<int> serializedCommit,
       required U8Array32 secretKey}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(groupId, serializer);
+        sse_encode_String(nostrGroupId, serializer);
         sse_encode_list_prim_u_8_loose(serializedCommit, serializer);
         sse_encode_u_8_array_32(secretKey, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
@@ -216,7 +216,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiMlsApiCreateCommitMessageForGroupConstMeta,
-      argValues: [groupId, serializedCommit, secretKey],
+      argValues: [nostrGroupId, serializedCommit, secretKey],
       apiImpl: this,
     ));
   }
@@ -224,7 +224,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiMlsApiCreateCommitMessageForGroupConstMeta =>
       const TaskConstMeta(
         debugName: "create_commit_message_for_group",
-        argNames: ["groupId", "serializedCommit", "secretKey"],
+        argNames: ["nostrGroupId", "serializedCommit", "secretKey"],
       );
 
   @override
