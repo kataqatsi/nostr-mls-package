@@ -252,9 +252,9 @@ checksum = "832133bbabbbaa9fbdba793456a2827627a7d2b8fb96032fa1e7666d7895832b"
 
 [[package]]
 name = "bumpalo"
-version = "3.18.1"
+version = "3.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "793db76d6187cd04dff33004d8e6c9cc4e05cd330500379d2394209271b4aeee"
+checksum = "46c5e41b57b8bba42a04676d81cb89e9ee8e859a1a66f80a5a72e1cb76b34d43"
 
 [[package]]
 name = "bytemuck"
@@ -285,9 +285,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.27"
+version = "1.2.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d487aa071b5f64da6f19a3e848e3578944b726ee5a4854b82172f02aa876bfdc"
+checksum = "5c1599538de2394445747c8cf7935946e3cc27e9625f889d979bfb2aaf569362"
 dependencies = [
  "shlex",
 ]
@@ -1040,9 +1040,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.9.0"
+version = "2.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cea70ddb795996207ad57735b50c5982d8844f38ba9ee5f1aedcfb708a2aa11e"
+checksum = "fe4cd85333e22411419a0bcae1297d25e58c9443848b11dc6a86fefe8c78a661"
 dependencies = [
  "equivalent",
  "hashbrown 0.15.4",
@@ -1068,6 +1068,17 @@ dependencies = [
  "js-sys",
  "wasm-bindgen",
  "web-sys",
+]
+
+[[package]]
+name = "io-uring"
+version = "0.7.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b86e202f00093dcba4275d4636b93ef9dd75d025ae560d2521b45ea28ab49013"
+dependencies = [
+ "bitflags",
+ "cfg-if",
+ "libc",
 ]
 
 [[package]]
@@ -1171,7 +1182,7 @@ dependencies = [
 [[package]]
 name = "nostr"
 version = "0.41.0"
-source = "git+https://github.com/wcat7/nostr#116c5ff766cd8d63af4be3257ee836f1987b3705"
+source = "git+https://github.com/wcat7/nostr#c893d98a6d859216db303ec5fc0276cb6389e778"
 dependencies = [
  "base64",
  "bech32",
@@ -1194,7 +1205,7 @@ dependencies = [
 [[package]]
 name = "nostr-mls"
 version = "0.41.0"
-source = "git+https://github.com/wcat7/nostr#116c5ff766cd8d63af4be3257ee836f1987b3705"
+source = "git+https://github.com/wcat7/nostr#c893d98a6d859216db303ec5fc0276cb6389e778"
 dependencies = [
  "nostr",
  "nostr-mls-storage",
@@ -1209,7 +1220,7 @@ dependencies = [
 [[package]]
 name = "nostr-mls-sqlite-storage"
 version = "0.41.0"
-source = "git+https://github.com/wcat7/nostr#116c5ff766cd8d63af4be3257ee836f1987b3705"
+source = "git+https://github.com/wcat7/nostr#c893d98a6d859216db303ec5fc0276cb6389e778"
 dependencies = [
  "nostr",
  "nostr-mls-storage",
@@ -1225,7 +1236,7 @@ dependencies = [
 [[package]]
 name = "nostr-mls-storage"
 version = "0.41.0"
-source = "git+https://github.com/wcat7/nostr#116c5ff766cd8d63af4be3257ee836f1987b3705"
+source = "git+https://github.com/wcat7/nostr#c893d98a6d859216db303ec5fc0276cb6389e778"
 dependencies = [
  "nostr",
  "openmls",
@@ -1385,9 +1396,9 @@ dependencies = [
 
 [[package]]
 name = "openssl-src"
-version = "300.5.0+3.5.0"
+version = "300.5.1+3.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e8ce546f549326b0e6052b649198487d91320875da901e7bd11a06d1ee3f9c2f"
+checksum = "735230c832b28c000e3bc117119e6466a663ec73506bc0a9907ea4187508e42a"
 dependencies = [
  "cc",
 ]
@@ -2166,17 +2177,19 @@ dependencies = [
 
 [[package]]
 name = "tokio"
-version = "1.45.1"
+version = "1.46.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75ef51a33ef1da925cea3e4eb122833cb377c61439ca401b770f54902b806779"
+checksum = "0cc3a2344dafbe23a245241fe8b09735b521110d30fcefbbd5feb1797ca35d17"
 dependencies = [
  "backtrace",
  "bytes",
+ "io-uring",
  "libc",
  "mio",
  "parking_lot",
  "pin-project-lite",
  "signal-hook-registry",
+ "slab",
  "socket2",
  "tokio-macros",
  "windows-sys 0.52.0",
