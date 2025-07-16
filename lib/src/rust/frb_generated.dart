@@ -99,7 +99,7 @@ abstract class RustLibApi extends BaseApi {
       required List<String> relays});
 
   Future<String> crateApiMlsApiCreateKeyPackageForEvent(
-      {required String publicKey, List<String>? relay});
+      {required String publicKey, List<String>? relay, String? client});
 
   Future<String> crateApiMlsApiCreateMessageForGroup(
       {required List<int> groupId, required String rumorEventString});
@@ -282,12 +282,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<String> crateApiMlsApiCreateKeyPackageForEvent(
-      {required String publicKey, List<String>? relay}) {
+      {required String publicKey, List<String>? relay, String? client}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(publicKey, serializer);
         sse_encode_opt_list_String(relay, serializer);
+        sse_encode_opt_String(client, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 5, port: port_);
       },
@@ -296,7 +297,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiMlsApiCreateKeyPackageForEventConstMeta,
-      argValues: [publicKey, relay],
+      argValues: [publicKey, relay, client],
       apiImpl: this,
     ));
   }
@@ -304,7 +305,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiMlsApiCreateKeyPackageForEventConstMeta =>
       const TaskConstMeta(
         debugName: "create_key_package_for_event",
-        argNames: ["publicKey", "relay"],
+        argNames: ["publicKey", "relay", "client"],
       );
 
   @override

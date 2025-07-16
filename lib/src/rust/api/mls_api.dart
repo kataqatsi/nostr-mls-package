@@ -30,9 +30,9 @@ Future<String> getExtensions() =>
 /// Create a key package for an event
 /// Returns: JSON formatted key package information, including encoded key package and tags
 Future<String> createKeyPackageForEvent(
-        {required String publicKey, List<String>? relay}) =>
+        {required String publicKey, List<String>? relay, String? client}) =>
     RustLib.instance.api.crateApiMlsApiCreateKeyPackageForEvent(
-        publicKey: publicKey, relay: relay);
+        publicKey: publicKey, relay: relay, client: client);
 
 /// Create a group
 /// Returns: JSON formatted group information

@@ -75,6 +75,7 @@ pub fn get_extensions() -> Result<String> {
 pub fn create_key_package_for_event(
     public_key: String,
     relay: Option<Vec<String>>,
+    client: Option<String>,
 ) -> Result<String> {
     let mls = NOSTR_MLS
         .lock()
@@ -96,7 +97,7 @@ pub fn create_key_package_for_event(
         .unwrap_or(Ok(vec![]))?;
 
     let (encoded_key_package, tags) = nostr_mls
-        .create_key_package_for_event(&public_key, relay)
+        .create_key_package_for_event(&public_key, relay, client)
         .map_err(|e| anyhow!("Failed to create key package: {}", e))?;
 
     let tags_str: Vec<String> = tags.iter().map(|tag| format!("{:?}", tag)).collect();

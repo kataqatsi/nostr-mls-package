@@ -236,6 +236,7 @@ fn wire__crate__api__mls_api__create_key_package_for_event_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_public_key = <String>::sse_decode(&mut deserializer);
             let api_relay = <Option<Vec<String>>>::sse_decode(&mut deserializer);
+            let api_client = <Option<String>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
@@ -243,6 +244,7 @@ fn wire__crate__api__mls_api__create_key_package_for_event_impl(
                         let output_ok = crate::api::mls_api::create_key_package_for_event(
                             api_public_key,
                             api_relay,
+                            api_client,
                         )?;
                         Ok(output_ok)
                     })(),
