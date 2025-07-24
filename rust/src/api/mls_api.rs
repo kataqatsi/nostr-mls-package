@@ -681,11 +681,7 @@ pub fn find_encoded_keypackage_from_welcome_event(
         (Some(index), Some(info)) => json!({
             "found": true,
             "matched_index": index,
-            "keypackage_info": {
-                "signature_key": info.signature_key,
-                "credential": info.credential,
-                "capabilities": info.capabilities,
-            }
+            "keypackage_info": null
         }),
         _ => json!({
             "found": false,
