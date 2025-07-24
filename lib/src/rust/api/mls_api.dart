@@ -152,6 +152,18 @@ Future<String> getKeyPackageFromStorage(
     RustLib.instance.api.crateApiMlsApiGetKeyPackageFromStorage(
         serializedKeyPackage: serializedKeyPackage);
 
+/// Find encoded key package from welcome event
+/// Parameters: encoded_keypackages - array of encoded key package strings, wrapper_event_id - byte array of event ID, rumor_event_string - JSON string of the event
+/// Returns: JSON formatted result containing the matched key package index and info if found
+Future<String> findEncodedKeypackageFromWelcomeEvent(
+        {required List<String> encodedKeypackages,
+        required List<int> wrapperEventId,
+        required String rumorEventString}) =>
+    RustLib.instance.api.crateApiMlsApiFindEncodedKeypackageFromWelcomeEvent(
+        encodedKeypackages: encodedKeypackages,
+        wrapperEventId: wrapperEventId,
+        rumorEventString: rumorEventString);
+
 class U8Array32 extends NonGrowableListView<int> {
   static const arraySize = 32;
 

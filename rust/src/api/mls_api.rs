@@ -651,3 +651,48 @@ pub fn get_key_package_from_storage(serialized_key_package: String) -> Result<St
 
     Ok(result.to_string())
 }
+
+/// Find encoded key package from welcome event
+/// Parameters: encoded_keypackages - array of encoded key package strings, wrapper_event_id - byte array of event ID, rumor_event_string - JSON string of the event
+/// Returns: JSON formatted result containing the matched key package index and info if found
+pub fn find_encoded_keypackage_from_welcome_event(
+    encoded_keypackages: Vec<String>,
+    wrapper_event_id: Vec<u8>,
+    rumor_event_string: String,
+) -> Result<String> {
+    let mls = NOSTR_MLS
+        .lock()
+        .map_err(|_| anyhow!("Failed to acquire NOSTR_MLS lock"))?;
+    let nostr_mls = mls
+        .as_ref()
+        .ok_or_else(|| anyhow!("NostrMls is not initialized"))?;
+
+    let rumor_event = UnsignedEvent::from_json(rumor_event_string)
+        .map_err(|e| anyhow!("Failed to parse event: {}", e))?;
+
+    let event_id =
+        EventId::from_slice(&wrapper_event_id).map_err(|e| anyhow!("Invalid event ID: {}", e))?;
+
+    let (matched_index, keypackage_info) = nostr_mls
+        .find_encoded_keypackage_from_welcome_event(&encoded_keypackages, &event_id, &rumor_event)
+        .map_err(|e| anyhow!("Failed to find encoded key package: {}", e))?;
+
+    let result = match (matched_index, keypackage_info) {
+        (Some(index), Some(info)) => json!({
+            "found": true,
+            "matched_index": index,
+            "keypackage_info": {
+                "signature_key": info.signature_key,
+                "credential": info.credential,
+                "capabilities": info.capabilities,
+            }
+        }),
+        _ => json!({
+            "found": false,
+            "matched_index": null,
+            "keypackage_info": null,
+        })
+    };
+
+    Ok(result.to_string())
+}
