@@ -338,7 +338,59 @@ pub fn process_message_for_group(event_string: String) -> Result<String> {
         "added_members": added_members_json,
         "removed_members": removed_members_json,
         "commit": result.commit,
-        "welcome": result.welcome
+        "welcome": result.welcome,
+        "staged_message_bytes": result.message_bytes
+    }).to_string())
+}
+
+/// Process a commit message for a specific group
+/// Parameters: group_id - byte array of group ID, message_bytes - serialized message bytes
+/// Returns: JSON formatted processing result
+pub fn process_commit_message_for_group(group_id: Vec<u8>, message_bytes: Vec<u8>) -> Result<String> {
+    let mls = NOSTR_MLS
+        .lock()
+        .map_err(|_| anyhow!("Failed to acquire NOSTR_MLS lock"))?;
+    let nostr_mls = mls
+        .as_ref()
+        .ok_or_else(|| anyhow!("NostrMls is not initialized"))?;
+
+    let group_id = GroupId::from_slice(&group_id);
+
+    let result = nostr_mls
+        .process_commit_message_for_group(&group_id, &message_bytes)
+        .map_err(|e| anyhow!("Failed to process commit message: {}", e))?;
+
+    // Handle message
+    let message_json = match result.message {
+        Some(message) => {
+            serde_json::to_value(&message)
+                .map_err(|e| anyhow!("Failed to serialize message: {}", e))?
+        }
+        None => serde_json::Value::Null,
+    };
+
+    // Handle member_changes
+    let (added_members_json, removed_members_json) = match result.member_changes {
+        Some(member_changes) => {
+            let added_members: Vec<String> = member_changes.added_members;
+            let removed_members: Vec<String> = member_changes.removed_members;
+            (
+                serde_json::to_value(added_members)
+                    .map_err(|e| anyhow!("Failed to serialize added_members: {}", e))?,
+                serde_json::to_value(removed_members)
+                    .map_err(|e| anyhow!("Failed to serialize removed_members: {}", e))?,
+            )
+        }
+        None => (serde_json::Value::Null, serde_json::Value::Null),
+    };
+
+    Ok(json!({
+        "message": message_json,
+        "added_members": added_members_json,
+        "removed_members": removed_members_json,
+        "commit": result.commit,
+        "welcome": result.welcome,
+        "staged_message_bytes": result.message_bytes
     }).to_string())
 }
 

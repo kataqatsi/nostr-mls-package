@@ -86,6 +86,14 @@ Future<String> processMessageForGroup({required String eventString}) =>
     RustLib.instance.api
         .crateApiMlsApiProcessMessageForGroup(eventString: eventString);
 
+/// Process a commit message for a specific group
+/// Parameters: group_id - byte array of group ID, message_bytes - serialized message bytes
+/// Returns: JSON formatted processing result
+Future<String> processCommitMessageForGroup(
+        {required List<int> groupId, required List<int> messageBytes}) =>
+    RustLib.instance.api.crateApiMlsApiProcessCommitMessageForGroup(
+        groupId: groupId, messageBytes: messageBytes);
+
 /// Preview a group from a welcome message without joining it
 /// Parameters: wrapper_event_id - byte array of event ID, rumor_event_string - JSON string of the event
 /// Returns: JSON formatted group preview information
